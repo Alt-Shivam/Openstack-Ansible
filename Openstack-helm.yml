@@ -68,18 +68,23 @@
 
    - name: Deploy Glance
      command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/120-glance.sh
+     ignore_errors: yes
 
    - name: Deploy Cinder
      command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/130-cinder.sh
+     ignore_errors: yes
 
    - name: Deploy OpenvSwitch
      command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/140-openvswitch.sh
+     ignore_errors: yes
 
    - name: Deploy Libvirt
      command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/150-libvirt.sh
+     ignore_errors: yes
 
    - name: Deploy Compute Kit (Nova and Neutron)
      command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/160-compute-kit.sh
+     ignore_errors: yes
 
   #  - name: 
   #    command: chdir=/home/ubuntu/openstack-helm/
