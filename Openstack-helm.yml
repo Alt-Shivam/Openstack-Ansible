@@ -1,0 +1,85 @@
+---
+- hosts: all
+  become: yes
+  tasks:
+   - name: Setup Clients on the host
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/common/020-setup-client.sh
+
+   - name: Deploy the ingress controller
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/component/common/ingress.sh
+
+   - name: "Changing loopback device file"
+     become: yes
+     become_user: root
+     tags: Changing file
+     lineinfile:
+       path: /home/ubuntu/openstack-helm/tools/deployment/common/setup-ceph-loopback-device.sh
+       # String to Search
+       regexp: "sudo systemctl status loops-setup" 
+       # State is set to Absent to remove if the Searching Line is found
+       state: absent
+       backup: yes
+
+   - name: Deploy ceph
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/040-ceph.sh 
+
+   - name: Activate the OpenStack namespace to be able to use Ceph
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/045-ceph-ns-activate.sh
+
+   - name: Clone openstack-helm
+     git:
+       repo: https://github.com/Alt-Shivam/PVC-for-Openstack.git
+       dest: /home/ubuntu/PVC-for-Openstack/
+       clone: yes
+       update: yes
+
+   - name: make pvc for mariadb
+     command: chdir=/home/ubuntu/PVC-for-Openstack/ kubectl create -f PVC1.yaml
+
+   - name: make pvc for mariadb
+     command: chdir=/home/ubuntu/PVC-for-Openstack/ kubectl create -f PVC2.yaml
+
+   - name: make pvc for glance
+     command: chdir=/home/ubuntu/PVC-for-Openstack/ kubectl create -f PVC3.yaml
+
+   - name: make pvc for glance
+     command: chdir=/home/ubuntu/PVC-for-Openstack/ kubectl create -f PVC4.yaml
+
+   - name: Deploy MariaDB
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/050-mariadb.sh
+
+   - name: Deploy rabbitmq
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/060-rabbitmq.sh
+
+   - name: Deploy Memcached
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/070-memcached.sh
+
+   - name: Deploy Keystone
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/080-keystone.sh
+
+   - name: Deploy Heat
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/090-heat.sh
+
+   - name: Deploy Horizon
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/100-horizon.sh
+
+   - name: Deploy Rados Gateway for object store
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/110-ceph-radosgateway.sh
+
+   - name: Deploy Glance
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/120-glance.sh
+
+   - name: Deploy Cinder
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/130-cinder.sh
+
+   - name: Deploy OpenvSwitch
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/140-openvswitch.sh
+
+   - name: Deploy Libvirt
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/150-libvirt.sh
+
+   - name: Deploy Compute Kit (Nova and Neutron)
+     command: chdir=/home/ubuntu/openstack-helm/ ./tools/deployment/developer/ceph/160-compute-kit.sh
+
+  #  - name: 
+  #    command: chdir=/home/ubuntu/openstack-helm/
