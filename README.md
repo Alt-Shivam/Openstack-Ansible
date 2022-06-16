@@ -23,7 +23,7 @@ Press enter, enter .... to go ahead with default options.
   
 Step 2: Copy ssh key to host(to deploy openstack helm)
 ```bash
-ssh-copy-id <host ip address>@<host ip address>
+ssh-copy-id <host name>@<host ip address>
 ```
   
 Step 3: Cross check the passwordless ssh to remote host.
